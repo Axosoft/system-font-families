@@ -36,6 +36,7 @@ node_modules
 .idea
 
 
-dist/
+# Axosoft needs the dist folder since we're not publishing to npm
+# dist/
 *.sw*
 .DS_Store

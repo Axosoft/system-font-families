@@ -32,6 +32,6 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "ttfinfo": "https://github.com/rBurgett/ttfinfo.git"
+    "ttfinfo": "git+ssh://git@github.com/Axosoft/ttfinfo.git#7a565937ecd3089715265b774fd543037f5ef81f"
   }
 }

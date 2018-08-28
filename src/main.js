@@ -39,17 +39,18 @@ const filterReadableFonts = arr => arr
         return extension === '.ttf' || extension === '.otf';
     });
 
-const tableToObj = (obj, file, systemFont) => {
+const tableToObj = (obj, postscript, file, systemFont) => {
     return {
         family: obj['1'],
         subFamily: obj['2'],
         postscript: obj['6'],
         file,
-        systemFont
+        systemFont,
+        monospace: Boolean(postscript.isFixedPitch)
     };
 };
 
-const extendedReducer = (m, { family, subFamily, file, postscript, systemFont }) => {
+const extendedReducer = (m, { family, subFamily, file, monospace, postscript, systemFont }) => {
     if (m.has(family)) {
         const origFont = m.get(family);
         return m.set(family, {
@@ -66,6 +67,10 @@ const extendedReducer = (m, { family, subFamily, file, postscript, systemFont })
             postscriptNames: {
                 ...origFont.postscriptNames,
                 [subFamily]: postscript
+            },
+            monospace: {
+              ...origFont.monospace,
+              [subFamily]: monospace
             }
         });
     } else {
@@ -78,6 +83,9 @@ const extendedReducer = (m, { family, subFamily, file, postscript, systemFont })
             },
             postscriptNames: {
                 [subFamily]: postscript
+            },
+            monospace: {
+                [subFamily]: monospace
             }
         });
     }
@@ -162,7 +170,7 @@ const SystemFonts = function(options = {}) {
                         if (!fontMeta) {
                             resolve1(null);
                         } else {
-                            resolve1(tableToObj(fontMeta.tables.name, file, !customFontFiles.has(file)));
+                            resolve1(tableToObj(fontMeta.tables.name, fontMeta.tables.post, file, !customFontFiles.has(file)));
                         }
                     });
                 }));
@@ -196,7 +204,7 @@ const SystemFonts = function(options = {}) {
                 } catch (e) {
                     return arr;
                 }
-                return arr.concat([tableToObj(data.tables.name, file, !customFontFiles.has(file))]);
+                return arr.concat([tableToObj(data.tables.name, data.tables.post, file, !customFontFiles.has(file))]);
             }, [])
             .filter(data => data ? true : false)
             .reduce(extendedReducer, new Map());
